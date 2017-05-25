@@ -25,18 +25,15 @@ open _~'_ public
 
 mutual
   BisimEquiv  : IsEquivalence _~_
-  sameInitShapes (IsEquivalence.refl BisimEquiv {x = x}) = refl
-  hd∼ (bisim (IsEquivalence.refl BisimEquiv {x}) pos) = refl
-  tl∼ (bisim (IsEquivalence.refl BisimEquiv {x}) pos) with {!!} 
-  ...                                              | y = {!!}
+  sameInitShapes (IsEquivalence.refl BisimEquiv) = refl
+  bisim (IsEquivalence.refl BisimEquiv) pos = IsEquivalence.refl BisimEquiv'
   IsEquivalence.sym BisimEquiv = {!!}
   IsEquivalence.trans BisimEquiv = {!!}
 
 
 
   BisimEquiv' : IsEquivalence _~'_
-  hd∼ (IsEquivalence.refl BisimEquiv' {x}) = refl
-  tl∼ (IsEquivalence.refl BisimEquiv' {x}) = {!!}
+  IsEquivalence.refl BisimEquiv' = {!!}
   IsEquivalence.sym BisimEquiv' = {!!}
   IsEquivalence.trans BisimEquiv' = {!!}
 
