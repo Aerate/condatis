@@ -23,7 +23,7 @@ AG props = APred AG' (inF props)
 
 -- ∃ p ∈ path, ∀ s ∈ states/p
 {-# NO_POSITIVITY_CHECK #-}
-record EG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} 
+record EG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁}
   (props : FStream' {i} C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   coinductive
   field
