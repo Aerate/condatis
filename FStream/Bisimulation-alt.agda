@@ -3,6 +3,7 @@ module FStream.Bisimulation-alt where
 open import Library
 open import Relation.Binary
 open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality.Core as Core 
 
 open import FStream.Core
 open import CTL.Modalities
@@ -19,6 +20,24 @@ mutual
     field
       hd∼ : head s₁ ≡ head s₂
       tl∼ : ∀ {j : Size< i} → tail s₁ ~ tail s₂
+open _~_ public
+open _~'_ public
 
--- BisimIsEquivalence : IsEquivalence _~_
--- refl, sym, trans
+mutual
+  BisimEquiv  : IsEquivalence _~_
+  sameInitShapes (IsEquivalence.refl BisimEquiv {x = x}) = refl
+  hd∼ (bisim (IsEquivalence.refl BisimEquiv {x}) pos) = refl
+  tl∼ (bisim (IsEquivalence.refl BisimEquiv {x}) pos) with {!!} 
+  ...                                              | y = {!!}
+  IsEquivalence.sym BisimEquiv = {!!}
+  IsEquivalence.trans BisimEquiv = {!!}
+
+
+
+  BisimEquiv' : IsEquivalence _~'_
+  hd∼ (IsEquivalence.refl BisimEquiv' {x}) = refl
+  tl∼ (IsEquivalence.refl BisimEquiv' {x}) = {!!}
+  IsEquivalence.sym BisimEquiv' = {!!}
+  IsEquivalence.trans BisimEquiv' = {!!}
+
+
