@@ -1,14 +1,15 @@
 module CTL.Modalities where
 
-open import FStream.Core 
+open import FStream.Core
 open import Library
 
 ------------------------------------------------------------------------
 -- Modalities of CTL
 ------------------------------------------------------------------------
 
--- ∀ p ∈ paths, ∀ s ∈ states/p 
-record AG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} 
+-- ∀ p ∈ paths, ∀ s ∈ states/p
+{-# NO_POSITIVITY_CHECK #-}
+record AG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁}
   (props : FStream' {i} C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   coinductive
   field
@@ -20,8 +21,9 @@ AG : ∀ {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Se
 AG props = APred AG' (inF props)
 
 
--- ∃ p ∈ path, ∀ s ∈ states/p 
-record EG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} 
+-- ∃ p ∈ path, ∀ s ∈ states/p
+{-# NO_POSITIVITY_CHECK #-}
+record EG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁}
   (props : FStream' {i} C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   coinductive
   field
@@ -33,7 +35,7 @@ EG : ∀ {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Se
 EG props = EPred EG' (inF props)
 
 
--- ∀ p ∈ paths, ∃ s ∈ states/p 
+-- ∀ p ∈ paths, ∃ s ∈ states/p
 data AF {ℓ₁ ℓ₂} {C : Container ℓ₁} (cas : FStream C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   alreadyA : A (fmap head (inF cas)) → AF cas
   notYetA : APred AF (fmap (λ x → tail x) (inF cas)) → AF cas
@@ -45,7 +47,7 @@ data AF' {i} {ℓ₁ ℓ₂} {C : Container ℓ₁} (cas : FStream' {i} C (Set �
 open AF'
 
 
--- ∃ p ∈ paths, ∃ s ∈ states/p 
+-- ∃ p ∈ paths, ∃ s ∈ states/p
 data EF' {ℓ₁ ℓ₂} {i : Size} {C : Container ℓ₁} (cas : FStream' {i} C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   alreadyE : head cas → EF' cas
   notYetE :  {j : Size< i} →  E (fmap EF' (inF (tail cas))) → EF' cas
