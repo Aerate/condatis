@@ -4,6 +4,7 @@ open import Relation.Binary.PropositionalEquality
 
 open import Library
 open import FStream.FVec
+open import FStream.Bisimulation-alt
 open import FStream.Core
 open import CTL.Modalities
 
@@ -123,17 +124,28 @@ mapEG : ∀ {i} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁} {A : Set ℓ₂} {
 mapEG {v = v} {v' = v'} proofs = mapEG₁ v v' proofs
 
 
-{-
-bisimEG : ∀ {i} {ℓ₁ ℓ₂} {C : Container ℓ₁} {s₁ s₂ : FStream' C (Set ℓ₂)} → s₁ ∼E s₂ → EG' {i} s₁ → EG' {i} s₂
-nowE' (bisimEG bisim proof) = subst (λ x → x) (hd∼E bisim) (nowE' proof) -- TODO This thing is called differently
-laterE' (bisimEG {C = C} bisim proof) = {!   !}
--}
-{-
-proj₁ (laterE' (bisimEG {C = C} bisim proof) {j}) = {!   !} -- subst (Position C) (sameShapesE bisim) (proj₁ (laterE' proof))
-proj₂ (laterE' (bisimEG {C = C} bisim proof)) = {!   !} -- subst {! Position C  !} (sameShapesE bisim) (proj₂ (laterE' proof))
--}
+mutual
+  -- TODO Rename to ∼EG?
+  bisimEG : ∀ {i} {ℓ₁ ℓ₂} {C : Container ℓ₁} {s₁ s₂ : FStream C (Set ℓ₂)} → s₁ ~ s₂ → EG {i} s₁ → EG {i} s₂
+  proj₁ (bisimEG {C = C} bs (pos , proofs)) = subst (Position C) (sameInitShapes bs) pos
+  proj₂ (bisimEG bs (pos , proofs)) = bisimEG' (bisim bs pos) proofs
+  bisimEG' : ∀ {i} {ℓ₁ ℓ₂} {C : Container ℓ₁} {s₁ s₂ : FStream' C (Set ℓ₂)} → s₁ ~' s₂ → EG' {i} s₁ → EG' {i} s₂
+  nowE' (bisimEG' bs proof) = subst (λ x → x) (hd∼ bs) (nowE' proof) -- TODO This thing must already exist in stdlib somewhere
+  laterE' (bisimEG' {C = C} bs proof) = bisimEG (tl∼ bs) (laterE' proof)
 
 
+-- TODO Rather write as mutual with a map∼'
+map∼Lemma : ∀ {i} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁} {A : Set ℓ₂} {B : Set ℓ₃} {f : A → B} {m n} → (v : FVec C A m) → (v' : FVec C A (suc n)) → ((vmap f v pre⟨ vmap f v' ▻⋯)) ~ (map {i} f (v pre⟨ v' ▻⋯))
+sameInitShapes (map∼Lemma FNil (FCons x)) = refl
+sameInitShapes (map∼Lemma (FCons x) v') = refl
+hd∼ (bisim (map∼Lemma FNil (FCons x)) pos) = refl
+tl∼ (bisim (map∼Lemma FNil (FCons (shape , av))) pos) {j} = map∼Lemma {j} (proj₂ (av pos)) (FCons (shape , av)) -- TODO Beautify with with
+hd∼ (bisim (map∼Lemma (FCons x) (FCons x₁)) pos) = refl
+tl∼ (bisim (map∼Lemma (FCons (shape , av)) v') pos) {j} = map∼Lemma {j} (proj₂ (av pos)) v'
+
+-- TODO Eradicate the previous lemma with with on implicit arguments
+map∼ : ∀ {i} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁} {A : Set ℓ₂} {B : Set ℓ₃} {f : A → B} {m n} → {v : FVec C A m} → {v' : FVec C A (suc n)} → ((vmap f v pre⟨ vmap f v' ▻⋯)) ~ (map {i} f (v pre⟨ v' ▻⋯))
+map∼ {v = v} {v' = v'} = map∼Lemma v v'
 
 
 
