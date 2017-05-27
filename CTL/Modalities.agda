@@ -73,6 +73,21 @@ inF (tail (AN'ₛ s)) = fmap AN'ₛ (inF (tail s))
 
 -- TODO EN
 
+EN' : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
+EN' s = EPred head (inF (tail s))
+
+EN : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
+EN s = EPred EN' (inF s)
+
+
+{-# NON_TERMINATING #-} -- TODO EN' won't work with sizes
+EN'ₛ : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' C (Set ℓ₂) → FStream' C (Set (ℓ₁ ⊔ ℓ₂))
+head (EN'ₛ s) = EN' s
+inF (tail (EN'ₛ s)) = fmap EN'ₛ (inF (tail s))
+
+ENₛ : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream C (Set ℓ₂) → FStream C (Set (ℓ₁ ⊔ ℓ₂))
+inF (ENₛ s) = fmap EN'ₛ (inF s)
+
 data _AU'_ {ℓ₁ ℓ₂} {C : Container ℓ₁} (props₁ props₂ : FStream' C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   finallyA : head props₁ → props₁ AU' props₂
   _untilA_ : head props₂ → AN'ₛ props₁ AU' AN'ₛ props₂ → props₁ AU' props₂
