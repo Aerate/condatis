@@ -59,6 +59,30 @@ data EF {ℓ₁ ℓ₂} {C : Container ℓ₁} (cas : FStream C (Set ℓ₂)) : 
 open EF
 
 
+AN' : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
+AN' s = APred head (inF (tail s))
+
+AN : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
+AN s = APred AN' (inF s)
+
+
+{-# NON_TERMINATING #-} -- TODO AN' won't work with sizes
+AN'ₛ : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' C (Set ℓ₂) → FStream' C (Set (ℓ₁ ⊔ ℓ₂))
+head (AN'ₛ s) = AN' s
+inF (tail (AN'ₛ s)) = fmap AN'ₛ (inF (tail s))
+
+-- TODO EN
+
+data _AU'_ {ℓ₁ ℓ₂} {C : Container ℓ₁} (props₁ props₂ : FStream' C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
+  finallyA : head props₁ → props₁ AU' props₂
+  _untilA_ : head props₂ → AN'ₛ props₁ AU' AN'ₛ props₂ → props₁ AU' props₂
+
+AU : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream C (Set ℓ₂) → FStream C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
+AU s₁ s₂ =  APred (λ x → APred (λ y → x AU' y) (inF s₁)) (inF s₂)
+
+-- TODO AU, EU', EU
+
+
 initA : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂))
 head (initA {i} {ℓ₁} {ℓ₂} {C} cas) = A {ℓ₁} {ℓ₂} (fmap head (inF {i} cas))
 inF (tail (initA cas)) = fmap (initA ∘ (λ as → tail as)) (inF cas)
