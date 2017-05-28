@@ -7,6 +7,7 @@ module Library where
 
 open import Data.Empty public
 open import Data.Unit hiding (_≟_; _≤_; _≤?_; decSetoid; decTotalOrder; setoid) public
+open import Data.Sum public hiding (map)
 open import Data.Bool hiding (_≟_) public
 open import Data.Nat hiding (_⊔_) public
 open import Data.Product hiding (map) public
