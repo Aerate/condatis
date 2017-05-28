@@ -17,6 +17,9 @@ AGₛ' : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' {i} C (Set �
 head (AGₛ' props) = AG' props
 inF (tail (AGₛ' props)) = fmap AGₛ' (inF (tail props))
 
+AGₛ : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → FStream {i} C (Set (ℓ₁ ⊔ ℓ₂))
+inF (AGₛ props) = fmap AGₛ' (inF props)
+
 AFₛ' : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' {i} C (Set ℓ₂) → FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂))
 head (AFₛ' x) =  AF' x
 inF (tail (AFₛ' x)) = fmap AFₛ' (inF (tail x))
