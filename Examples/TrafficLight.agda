@@ -168,3 +168,18 @@ tautology₆ = ⟨ (23 , tt) ▻EG (42 , tt) ⟩EG ▻EG
 -- In lots of cases, Agda can infer the input that will validate the proof
 easy : EG ⟨ (true ≡_) <$> ask ▻ returnReader ⊤ ⟩ ▻⋯
 easy = ⟨ refl ▻EG₁ tt ⟩EG₁ ▻EG
+
+
+timesTwo : ∀ {i} → FStream {i} (ReaderC ℕ) ℕ
+timesTwo = map (_* 2) ⟨ ask ⟩ ▻⋯
+
+even : ℕ → Set
+even n = ∃ λ m → n ≡ m * 2
+
+alwaysEven : ∀ {i} → AG {i} (map even timesTwo)
+nowA' (alwaysEven p) = p , refl
+laterA' (alwaysEven p) = alwaysEven
+
+alwaysEven₁ : ∀ {i} → AG {i} (map even timesTwo)
+-- alwaysEven₁ = mapAG ([]AG pre⟨ {!   !} ▻AG) -- TODO Report internal error on refining
+alwaysEven₁ = mapAG ⟨ (λ p → p) ⟩AG ▻AG
