@@ -17,7 +17,7 @@ record AG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁}
     laterA' : {j : Size< i} → A (fmap AG' (inF (tail props)))
 open AG' public
 
-AG : ∀ {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
+AG : ∀ {i} {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
 AG props = APred AG' (inF props)
 
 
