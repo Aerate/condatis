@@ -6,6 +6,7 @@ module FStream.FVec where
 
 open import Library
 open import FStream.Core
+open import Data.Fin
 
 infixr 5 _▻_
 infix 6 ⟨_▻⋯
@@ -91,3 +92,7 @@ mutual
 ⟨_▻⋯ : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} {A : Set ℓ₂} {n : ℕ}
      → FVec C A (suc n) → FStream {i} C A
 ⟨ as ▻⋯ = FNil pre⟨ as ▻⋯
+
+data _[_]=_ {a} {A : Set a} {ℓ} {C : Container ℓ} : {n : ℕ} → FVec C A n → Fin n → ⟦ C ⟧ A → Set (a ⊔ ℓ) where
+  here : ∀ {n} {x : ⟦ C ⟧ A} {xs : FVec C A n} → (x ▻ xs) [ zero ]= x
+  there : ∀ {n} {k} {x y} {xs : FVec C A n} → xs [ k ]= x → (y ▻ xs) [ suc k ]= x
