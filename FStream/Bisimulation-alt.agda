@@ -24,6 +24,9 @@ mutual
 open _~_ public
 open _~'_ public
 
+-- alias 
+_∼_ = _~_
+
 {-
 mutual
   BisimEquiv  : ∀ {i : Size} → IsEquivalence (_~_ {i})
