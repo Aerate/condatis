@@ -30,15 +30,16 @@ data proofAG {ℓ₁ ℓ₂} {C : Container ℓ₁} : {n : ℕ} → (props : FVe
 
 
 
-{-
-mapAG : ∀ {i} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁} {A : Set ℓ₂} {f : A → Set ℓ₃} {m n} → (v : FVec C A m) → (v' : FVec C A (suc n)) → AG {i} ((vmap f v pre⟨ vmap f v' ▻⋯)) → AG {i} (map f (v pre⟨ v' ▻⋯))
-nowA' (mapAG FNil (FCons x) proofs p) = nowA' (proofs p)
-nowA' (mapAG (FCons x) v proofs p) = nowA' (proofs p)
-laterA' (mapAG FNil (FCons (shape , vals)) proofs p) p₁ with vals p
-... | a , v = mapAG v (FCons (shape , vals)) (laterA' (subst (λ x → {!   !}) refl (proofs p))) p₁
--- laterA' (mapAG FNil v' proof p) p₁ = mapAG ({!   !}) (FCons {!   !}) (λ p₂ → laterA' (proof {!   !}) {!   !}) {!   !}
-laterA' (mapAG (FCons x) v' proofs p) p₁ = {!   !}
--}
+
+mapAGlemma : ∀ {i} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁} {A : Set ℓ₂} {f : A → Set ℓ₃} {m n} → (v : FVec C A m) → (v' : FVec C A (suc n)) → AG {i} ((vmap f v pre⟨ vmap f v' ▻⋯)) → AG {i} (map f (v pre⟨ v' ▻⋯))
+nowA' (mapAGlemma FNil (FCons x) proofs p) = nowA' (proofs p)
+nowA' (mapAGlemma (FCons x) v proofs p) = nowA' (proofs p)
+laterA' (mapAGlemma FNil (FCons (shape , vals)) proofs p) p₁ = mapAGlemma (proj₂ (vals p)) (FCons (shape , vals)) (laterA' (proofs p)) p₁
+--note to self: with kann auch schaden
+laterA' (mapAGlemma (FCons (shape , vals)) v' proofs p) p₁ = mapAGlemma (proj₂ (vals p)) v' (laterA' (proofs p)) p₁
+
+mapAG : ∀ {i} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁} {A : Set ℓ₂} {f : A → Set ℓ₃} {m n} → {v : FVec C A m} → {v' : FVec C A (suc n)} → AG {i} ((vmap f v pre⟨ vmap f v' ▻⋯)) → AG {i} (map f (v pre⟨ v' ▻⋯))
+mapAG {v = v} {v' = v'} = mapAGlemma v v'
 
 {-
 mapAG : ∀ {i} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁} {A : Set (lsuc ℓ₃)} {f : A → Set ℓ₃} {m n} → {v : FVec C A m} → {v' : FVec C A (suc n)} → AG {i} ((vmap f v pre⟨ vmap f v' ▻⋯)) → AG {i} (map f (v pre⟨ v' ▻⋯))
@@ -67,7 +68,10 @@ laterA' (mapprecycle (FCons (shape , vals)) (FCons x) (ConsAG proofs) proofs' p)
 ⟨_▻AG : ∀ {i} {ℓ₁ ℓ₂} {C : Container ℓ₁} {n} {props : FVec C (Set ℓ₂) (suc n)} → proofAG props → AG {i} (FNil pre⟨ props ▻⋯)
 ⟨_▻AG = []AG pre⟨_▻AG
 
--- _⟩AG : ∀ {i} {ℓ₁ ℓ₂} {C : Container ℓ₁}
+
+_⟩AG : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} {prop : ⟦ C ⟧ (Set ℓ₂)} → A prop → proofAG (FCons (fmap (_, FNil) prop))
+x ⟩AG = ConsAG (λ p → x p , []AG)
+
 
 data proofEG {ℓ₁ ℓ₂} {C : Container ℓ₁} : {n : ℕ} → (props : FVec C (Set ℓ₂) n) → Set (ℓ₁ ⊔ ℓ₂) where
   []EG : proofEG FNil
