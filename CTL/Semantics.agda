@@ -19,7 +19,7 @@ record Positions (C : Container ℓ₀) : Set where
     shape : Shape C
     position : Position C shape
 
-data PositionVec {i} {ℓ} {C : Container ℓ} (fx : FStream {i} C ⊤) : ℕ → Set ℓ where
+data PositionVec {i} {ℓ} {C : Container ℓ} (fx : FStream {∞} C ⊤) : ℕ → Set ℓ where
   here : PositionVec fx zero
   there : ∀ {j : Size< i} {n} → (p : Position C (proj₁ (inF fx))) → PositionVec (tail (proj₂ (inF fx) p)) n → PositionVec fx (suc n)
 
@@ -52,11 +52,12 @@ onlyShapes as = map (const tt) as
 onlyShapes' : ∀ {i} {ℓ a} {A : Set a} {C : Container ℓ} → FStream' {↑ i} C A → FStream {i} C ⊤
 onlyShapes' as = onlyShapes (tail as)
 
-posFun : ∀ {i} {ℓ a} {A : Set a} {C : Container ℓ} {n} → (s : FStream {i} C A) → PositionVec {i} (onlyShapes {i} s) (suc n) → A
+posFun : ∀ {i} {ℓ a} {A : Set a} {C : Container ℓ} {n} → (s : FStream C A) → PositionVec {i} (onlyShapes s) (suc n) → A
 posFun = {!   !}
 
-posFun' : ∀ {i} {ℓ a} {A : Set a} {C : Container ℓ} {n} → (s : FStream' {↑ i} C A) → PositionVec {i} (onlyShapes' {i} s) n → A
-posFun' = {!   !}
+posFun' : ∀ {i} {ℓ a} {A : Set a} {C : Container ℓ} {n} → (s : FStream' C A) → PositionVec {i} (onlyShapes' s) n → A
+posFun' s here = head s
+posFun' s (there p x) = posFun' (proj₂ (inF (tail s)) p) x
 
 {-
 containerize : ∀ {ℓ a} {A : Set a} {C : Container ℓ} → FStream C A → ⟦ FStreamC C ⟧ A
@@ -89,35 +90,37 @@ embed false = ⊥
 _,_⊨_ : ∀ {C : Container ℓ₀} {n} → (fx : FStream C ⊤) → (pos : PositionVec fx (suc n)) → (s : ∀ {m} → PositionVec fx (suc m) → Set) → Set
 fx , pos ⊨ s = s pos
 
-_,_⊨'_ : ∀ {i} {C : Container ℓ₀} {n} → (fx : FStream {i} C ⊤) → (pos : PositionVec {i} fx n) → (s : ∀ {m} → PositionVec {i} fx m → Set) → Set
+_,_⊨'_ : ∀ {i} {C : Container ℓ₀} {n} → (fx : FStream C ⊤) → (pos : PositionVec {i} fx n) → (s : ∀ {m} → PositionVec {i} fx m → Set) → Set
 fx , pos ⊨' s = s pos
 
 
-_at_ : ∀ {i} {C : Container ℓ₀} {n} → (s : FStream {i} C Set) → (pos : PositionVec {i} (onlyShapes {i} s) (suc n)) → Set
-_at_ {i = i} s pos = (onlyShapes {i} s) , pos ⊨ posFun s --(λ x → proj₂ (containerize s) ({! suc  !} , x)) --(λ x → proj₂ (containerize s) (n , x))
+_at_ : ∀ {i} {C : Container ℓ₀} {n} → (s : FStream C Set) → (pos : PositionVec {i} (onlyShapes s) (suc n)) → Set
+_at_ {i = i} s pos = {!   !} -- (onlyShapes {i} s) , pos ⊨ posFun s
+--(λ x → proj₂ (containerize s) ({! suc  !} , x)) --(λ x → proj₂ (containerize s) (n , x))
 -- (proj₁ (containerize s)) , pos ⊨ (proj₂ (containerize s))
 
-_at'_ : ∀ {i} {C : Container ℓ₀} {n} → (s : FStream' {↑ i} C Set) → (pos : PositionVec {i} (onlyShapes' {i} s) n) → Set
-_at'_ {i = i} {n = n} s pos = (onlyShapes' {i} s) , pos ⊨' posFun' s --(λ x → proj₂ (containerize' s) ((lengthPV x) , x)) --(λ x → proj₂ (containerize' s) (n , x))
+_at'_ : ∀ {i} {C : Container ℓ₀} {n} → (s : FStream' C Set) → (pos : PositionVec {i} (onlyShapes' s) n) → Set
+_at'_ {i = i} {n = n} s pos = (onlyShapes' s) , pos ⊨' posFun' s --(λ x → proj₂ (containerize' s) ((lengthPV x) , x)) --(λ x → proj₂ (containerize' s) (n , x))
 -- (proj₁ (containerize' s)) , {!   !} ⊨ (proj₂ {! containerize' s  !})
 
 
 ⊨now : ∀ {C : Container ℓ₀} → (s : FStream C Set) → Set
 ⊨now s = ∀ p → s at (there p here) -- ∀ p → s at (here p)
 -- TODO Rewrite with modalities?
-⊨now' : ∀ {i} {C : Container ℓ₀} → (s : FStream' {↑ i} C Set) → Set
-⊨now' {i} s =  _at'_ {i} s here
+⊨now' : ∀ {C : Container ℓ₀} → (s : FStream' C Set) → Set
+⊨now' {i} s =  _at'_ s here
 
-semAG' : ∀ {i} {C : Container ℓ₀} → (s : FStream' {↑ i} C Set) → Set
-semAG' {i} s = ∀ {n} → (pVec : PositionVec {i} (onlyShapes' {i} s) n) → s at' pVec
+semAG' : ∀ {i} {C : Container ℓ₀} → (s : FStream' C Set) → Set
+semAG' {i} s = ∀ {n} → (pVec : PositionVec {i} (onlyShapes' s) n) → s at' pVec
 
-semAG : ∀ {i} {C : Container ℓ₀} → (s : FStream {i} C Set) → Set
+semAG : ∀ {C : Container ℓ₀} → (s : FStream C Set) → Set
 semAG s = ∀ {n} → (pVec : PositionVec (onlyShapes s) (suc n)) → s at pVec
 
-semAG'correct : ∀ {i} {C : Container ℓ₀} {s : FStream' {↑ i} C Set} → (⊨now' {i} (AGₛ' {↑ i} s)) ⇔ semAG' {i} s
+semAG'correct : ∀ {i} {C : Container ℓ₀} {s : FStream' C Set} → (⊨now' (AGₛ' s)) ⇔ semAG' {i} s
 _⇔_.l semAG'correct agProof here = nowA' agProof
 _⇔_.l semAG'correct agProof (there p v) = _⇔_.l semAG'correct (laterA' agProof p) v
-_⇔_.r semAG'correct semProof = {!   !} -- semProof (there {! p  !} {!   !})
+nowA' (_⇔_.r semAG'correct semProof) = semProof here
+laterA' (_⇔_.r semAG'correct semProof) {j} p = {! _⇔_.r semAG'correct ?  !}
 _⇔_.right-inverse semAG'correct = {!   !}
 _⇔_.left-inverse semAG'correct = {!   !}
 
