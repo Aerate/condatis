@@ -13,11 +13,11 @@ head (GAₛ' cas) = GA cas
 inF (tail (GAₛ' cas)) = fmap (GAₛ' ∘ (λ as → tail as)) (inF cas)
 -}
 
-AGₛ' : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' {i} C (Set ℓ₂) → FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂))
+AGₛ' : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' {∞} C (Set ℓ₂) → FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂))
 head (AGₛ' props) = AG' props
 inF (tail (AGₛ' props)) = fmap AGₛ' (inF (tail props))
 
-AGₛ : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → FStream {i} C (Set (ℓ₁ ⊔ ℓ₂))
+AGₛ : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {∞} C (Set ℓ₂) → FStream {i} C (Set (ℓ₁ ⊔ ℓ₂))
 inF (AGₛ props) = fmap AGₛ' (inF props)
 
 AFₛ' : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' {i} C (Set ℓ₂) → FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂))
