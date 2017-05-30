@@ -2,7 +2,9 @@ module CTL.ModalitiesIdeas where
 
 open import Library
 open import FStream.Core
-open import CTL.Modalities
+open import CTL.A
+open import CTL.E
+
 
 -- GAₛ : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → FStream {i} C (Set (ℓ₁ ⊔ ℓ₂))
 -- TODO Implement with fmap

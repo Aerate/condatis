@@ -7,7 +7,6 @@ open import Relation.Binary.PropositionalEquality.Core as Core
 -- open ≡-Reasoning
 
 open import FStream.Core
-open import CTL.Modalities
 
 
 mutual
@@ -24,7 +23,7 @@ mutual
 open _~_ public
 open _~'_ public
 
--- alias 
+-- alias
 _∼_ = _~_
 
 {-

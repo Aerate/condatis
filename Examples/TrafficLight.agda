@@ -11,8 +11,8 @@ open import FStream.Core
 open import FStream.FVec
 open import FStream.Containers
 
-open import CTL.Modalities
-open import CTL.Proof
+open import CTL.A
+open import CTL.E
 open import CTL.ModalitiesIdeas
 
 data Colour : Set where
@@ -150,10 +150,10 @@ nowE' (proj₂ (laterE' (proj₂ responsivity))) = refl
 laterE' (proj₂ (laterE' (proj₂ responsivity))) = responsivity
 
 responsivity₁ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
-responsivity₁ = mapEG ⟨ refl ⟩EG₁ ▻EG
+responsivity₁ = mapEG ⟨ refl ⟩EGᵢ ▻EG
 
 responsivity₁' : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
-responsivity₁' = mapEG ⟨ refl ▻EG₁ refl ⟩EG₁ ▻EG
+responsivity₁' = mapEG ⟨ refl ▻EGᵢ refl ⟩EGᵢ ▻EG
 
 responsivity₂ : ∀ {i} → EG {i} (⟨ vmap (true ≡_) (returnReader true ▻ ask ⟩) ▻⋯)
 proj₁ responsivity₂ = false
@@ -222,7 +222,7 @@ tautology₆ = ⟨ (23 , tt) ▻EG (42 , tt) ⟩EG ▻EG
 
 -- In lots of cases, Agda can infer the input that will validate the proof
 easy : EG ⟨ (true ≡_) <$> ask ▻ returnReader ⊤ ⟩ ▻⋯
-easy = ⟨ refl ▻EG₁ tt ⟩EG₁ ▻EG
+easy = ⟨ refl ▻EGᵢ tt ⟩EGᵢ ▻EG
 
 
 timesTwo : ∀ {i} → FStream {i} (ReaderC ℕ) ℕ
