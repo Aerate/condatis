@@ -65,12 +65,21 @@ laterA' (mapprecycle (FCons (shape , vals)) (FCons x) (ConsAG proofs) proofs' p)
 ... | proof , proofs'' with vals p
 ...                       | a , v = mapprecycle v (FCons x) proofs'' proofs' p₁
 
+infixr 5 _▻AG_
+infix 6 ⟨_▻AG
+infix 7 _⟩AG
+
+
 ⟨_▻AG : ∀ {i} {ℓ₁ ℓ₂} {C : Container ℓ₁} {n} {props : FVec C (Set ℓ₂) (suc n)} → proofAG props → AG {i} (FNil pre⟨ props ▻⋯)
 ⟨_▻AG = []AG pre⟨_▻AG
 
 
 _⟩AG : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} {prop : ⟦ C ⟧ (Set ℓ₂)} → A prop → proofAG (FCons (fmap (_, FNil) prop))
 x ⟩AG = ConsAG (λ p → x p , []AG)
+
+_▻AG_ : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} {prop : ⟦ C ⟧ (Set ℓ₂)} {n} {props : FVec C (Set ℓ₂) n} → A prop → proofAG props → proofAG (FCons (fmap (_, props) prop))
+x ▻AG v = ConsAG (λ p → (x p) , v)
+
 
 
 data proofEG {ℓ₁ ℓ₂} {C : Container ℓ₁} : {n : ℕ} → (props : FVec C (Set ℓ₂) n) → Set (ℓ₁ ⊔ ℓ₂) where
