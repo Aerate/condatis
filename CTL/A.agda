@@ -5,7 +5,7 @@
 module CTL.A where
 
 open import FStream.Core
-open import Library renaming (A to All)
+open import Library
 
 -- Always Certain : s ⊧ φ ⇔ ∀ p ∀ s ∈ p ⊧ φ
 {-# NO_POSITIVITY_CHECK #-}
@@ -14,7 +14,7 @@ record AG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁}
   coinductive
   field
     nowA' : head props
-    laterA' : {j : Size< i} → All (fmap AG' (inF (tail props)))
+    laterA' : {j : Size< i} → A (fmap AG' (inF (tail props)))
 open AG' public
 
 AG : ∀ {i} {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
@@ -24,14 +24,14 @@ AG props = APred AG' (inF props)
 -- Always Possible : s ⊧ φ ⇔ ∀ p ∃ s ∈ p ⊧ φ
 data AF {ℓ₁ ℓ₂} {C : Container ℓ₁}
      (cas : FStream C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
-  alreadyA : All (fmap head (inF cas)) → AF cas
+  alreadyA : A (fmap head (inF cas)) → AF cas
   notYetA : APred AF (fmap (λ x → tail x) (inF cas)) → AF cas
 open AF
 
 data AF' {i} {ℓ₁ ℓ₂} {C : Container ℓ₁}
      (cas : FStream' {i} C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   alreadyA' : head cas → AF' cas
-  notYetA' :  {j : Size< i} →  All (fmap AF' (inF (tail cas))) → AF' cas
+  notYetA' :  {j : Size< i} →  A (fmap AF' (inF (tail cas))) → AF' cas
 open AF'
 
 
