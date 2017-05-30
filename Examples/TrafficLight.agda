@@ -53,13 +53,20 @@ boolLight₃ : FStream (ReaderC Bool) Bool
 boolLight₃ = ⟨ returnReader true ▻ returnReader false ▻ returnReader true ⟩ ▻⋯
 
 -- TODO: Check FAₛ implementation since only the 'AlreadyA'-Constructor seems to work
-isLive₃ : ∀ {i} → head (AGₛ' {i} (AFₛ' {i} (initA {i} (map (_≡ green) (trafficLight₃ {i})))))
+isLive₃ : ∀ {i} → head (AGₛ' {i} (AFₛ' (initA (map (_≡ green) (trafficLight₃)))))
 nowA' isLive₃ = alreadyA' (λ p → refl)
-nowA' (laterA' (isLive₃ {i}) {j} p) = {!   !}
+nowA' (laterA' (isLive₃ {i}) {j} p) = {! notYetA' ?   !}
 nowA' (laterA' (laterA' isLive₃ p₁) p₂) = {!   !}
 nowA' (laterA' (laterA' (laterA' isLive₃ p₁) p₂) p) = {!   !}
 laterA' (laterA' (laterA' (laterA' isLive₃ p₁) p₂) p) {j} p₃ = isLive₃
 
+isLive₄ : ∀ {i} → AG {i} (AFₛ (map (_≡ green) (trafficLight₃)))
+nowA' (isLive₄ p) = alreadyA' refl
+nowA' (laterA' (isLive₄ p) false) = alreadyA' refl
+nowA' (laterA' (isLive₄ p) true) = notYetA' (const (notYetA' (const (alreadyA' refl))))
+nowA' (laterA' (laterA' (isLive₄ p) p₁) p₂) = notYetA' (λ p₃ → alreadyA' refl)
+nowA' (laterA' (laterA' (laterA' (isLive₄ p) p₁) p₂) p₃) = alreadyA' refl
+laterA' (laterA' (laterA' (laterA' (isLive₄ p) p₁) p₂) p₃) p₄ = isLive₄ true
 
 mutual
   -- This fellow switches between false and true every time a "true" is entered as input
@@ -79,11 +86,11 @@ mutual
 -- At every point in time, it is possible (by correct input) to output true
 -- TODO Not sure whether initA is called for here
 mutual
-  edgeResponsive : ∀ {i} → head (AGₛ' {i} (EFₛ' {i} (Eₛ {i} (map {i} (_≡ true) (trueEgde {i})))))
+  edgeResponsive : ∀ {i} → head (AGₛ' {i} (EFₛ' (Eₛ (map (_≡ true) trueEgde ))))
   nowA' edgeResponsive = alreadyE (false , refl)
   laterA' edgeResponsive false = edgeResponsive
   laterA' edgeResponsive true = edgeResponsive'
-  edgeResponsive' : ∀ {i} → head (AGₛ' {i} (EFₛ' {i} (Eₛ {i} (map {i} (_≡ true) (falseEgde {i})))))
+  edgeResponsive' : ∀ {i} → head (AGₛ' {i} (EFₛ' (Eₛ (map (_≡ true) falseEgde))))
   nowA' edgeResponsive' = alreadyE (true , refl)
   laterA' edgeResponsive' false = edgeResponsive'
   laterA' edgeResponsive' true = edgeResponsive
@@ -156,6 +163,54 @@ nowE' (proj₂ (laterE' (proj₂ responsivity₂))) = refl
 laterE' (proj₂ (laterE' (proj₂ responsivity₂))) = responsivity₂
 
 
+responsoSmall : EN (⟨ vmap (true ≡_) (returnReader true ▻ ask ⟩) ▻⋯)
+proj₁ responsoSmall = true
+proj₁ (proj₂ responsoSmall) = true
+proj₂ (proj₂ responsoSmall) = refl
+
+responso : AG (ENₛ (⟨ vmap (true ≡_) (returnReader true ▻ ask ⟩) ▻⋯))
+nowA' (responso p) with fmap EN'ₛ (inF ⟨ FCons (fmap (vmap' (λ section → true ≡ section)) (fmap (λ x → x , ask ⟩) (returnReader true))) ▻⋯)
+nowA' (responso p) | proj₃ , proj₄ with EN' (_aux_ ((true ≡ true) , FCons (tt , (λ x → (true ≡ x) , FNil))) (FCons (tt , (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))))))
+...   | bla = {!   !}
+nowA' (laterA' (responso p) p₁) = {!   !}
+laterA' (laterA' (responso p) p₁) p₂ = {!   !}
+
+{-
+head
+      (EN'ₛ
+       (((true ≡ true) , FCons (tt , (λ x → (true ≡ x) , FNil))) aux
+        FCons
+        (tt ,
+         (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))))))
+EN'
+ (((true ≡ true) , FCons (tt , (λ x → (true ≡ x) , FNil))) aux
+  FCons
+  (tt ,
+   (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil)))))
+EPred head (inF (tail
+ (((true ≡ true) , FCons (tt , (λ x → (true ≡ x) , FNil))) aux
+  FCons
+  (tt ,
+   (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil)))))))
+EPred head (inF
+ (( FCons (tt , (λ x → (true ≡ x) , FNil))) pre⟨
+  FCons
+  (tt ,
+   (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))) ▻⋯ )))
+EPred head (fmap (_aux
+  (FCons
+  (tt ,
+   (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))) ▻⋯ ))) (tt , (λ x → (true ≡ x) , FNil)) )
+EPred head (tt , (λ x → (true ≡ x) , FNil) aux
+  FCons
+  (tt ,
+   (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))) ▻⋯ ) )
+∃ p → head ((λ x → (true ≡ x) , FNil) aux
+  FCons
+  (tt ,
+   (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))) ▻⋯ ) )
+-}
+
 tautology₄ : EG ⟨ returnReader ⊤ ⟩ ▻⋯
 tautology₄ = ⟨ ConsEG (23 , tt , []EG) ▻EG
 
@@ -168,3 +223,18 @@ tautology₆ = ⟨ (23 , tt) ▻EG (42 , tt) ⟩EG ▻EG
 -- In lots of cases, Agda can infer the input that will validate the proof
 easy : EG ⟨ (true ≡_) <$> ask ▻ returnReader ⊤ ⟩ ▻⋯
 easy = ⟨ refl ▻EG₁ tt ⟩EG₁ ▻EG
+
+
+timesTwo : ∀ {i} → FStream {i} (ReaderC ℕ) ℕ
+timesTwo = map (_* 2) ⟨ ask ⟩ ▻⋯
+
+even : ℕ → Set
+even n = ∃ λ m → n ≡ m * 2
+
+alwaysEven : ∀ {i} → AG {i} (map even timesTwo)
+nowA' (alwaysEven p) = p , refl
+laterA' (alwaysEven p) = alwaysEven
+
+alwaysEven₁ : ∀ {i} → AG {i} (map even timesTwo)
+-- alwaysEven₁ = mapAG ([]AG pre⟨ {!   !} ▻AG) -- TODO Report internal error on refining
+alwaysEven₁ = mapAG ⟨ (λ p → p) ⟩AG ▻AG

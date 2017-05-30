@@ -10,14 +10,14 @@ open import Library
 -- ∀ p ∈ paths, ∀ s ∈ states/p
 {-# NO_POSITIVITY_CHECK #-}
 record AG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁}
-  (props : FStream' {i} C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
+  (props : FStream' {∞} C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   coinductive
   field
     nowA' : head props
     laterA' : {j : Size< i} → A (fmap AG' (inF (tail props)))
 open AG' public
 
-AG : ∀ {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
+AG : ∀ {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {∞} C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
 AG props = APred AG' (inF props)
 
 
