@@ -113,6 +113,12 @@ _at'_ {i = i} {n = n} s pos = (onlyShapes' s) , pos ⊨' posFun' s --(λ x → p
 semAG' : ∀ {i} {C : Container ℓ₀} → (s : FStream' C Set) → Set
 semAG' {i} s = ∀ {n} → (pVec : PositionVec {i} (onlyShapes' s) n) → s at' pVec
 
+
+semAG'tail : ∀ {i} {C : Container ℓ₀} → {s : FStream' C Set} → semAG' {i} s → APred (semAG' {i}) (inF (tail s))
+semAG'tail proof p here = {!   !}
+semAG'tail proof p (there p₁ pVec) = {!   !}
+
+
 semAG : ∀ {C : Container ℓ₀} → (s : FStream C Set) → Set
 semAG s = ∀ {n} → (pVec : PositionVec (onlyShapes s) (suc n)) → s at pVec
 
@@ -120,7 +126,7 @@ semAG'correct : ∀ {i} {C : Container ℓ₀} {s : FStream' C Set} → (⊨now'
 _⇔_.l semAG'correct agProof here = nowA' agProof
 _⇔_.l semAG'correct agProof (there p v) = _⇔_.l semAG'correct (laterA' agProof p) v
 nowA' (_⇔_.r semAG'correct semProof) = semProof here
-laterA' (_⇔_.r semAG'correct semProof) {j} p = {! _⇔_.r semAG'correct ?  !}
+laterA' (_⇔_.r (semAG'correct {i}) semProof) {j} p = _⇔_.r semAG'correct (semAG'tail {! semProof  !} {!   !})
 _⇔_.right-inverse semAG'correct = {!   !}
 _⇔_.left-inverse semAG'correct = {!   !}
 
