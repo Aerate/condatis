@@ -64,7 +64,7 @@ AU : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream C (Set ℓ₂) →
 AU s₁ s₂ =  APred (λ x → APred (λ y → x AU' y) (inF s₁)) (inF s₂)
 
 
-
+-- TODO Unnecessary?
 initA : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} →
         FStream {i} C (Set ℓ₂) →
         FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂))
@@ -72,7 +72,7 @@ head (initA {i} {ℓ₁} {ℓ₂} {C} cas) = A {ℓ₁} {ℓ₂} (fmap head (inF
 inF (tail (initA cas)) = fmap (initA ∘ (λ as → tail as)) (inF cas)
 
 
-
+-- TODO In separate file?
 module ProofA where
 
 open import FStream.FVec
@@ -84,6 +84,7 @@ data proofAG' {ℓ₁ ℓ₂} {C : Container ℓ₁} : {n : ℕ} →
            prop → A (fmap proofAG' props) → proofAG' (FCons' prop props)
 
 
+-- TODO Unify syntax with other examples
 _preCycleAG'_ : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} {m n}
                 {props : FVec' C (Set ℓ₂) m}
                 {props' : FVec' C (Set ℓ₂) (suc n)} →

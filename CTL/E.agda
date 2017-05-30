@@ -21,6 +21,9 @@ EG : ∀ {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Se
 EG props = EPred EG' (inF props)
 
 
+-- TODO Possibly split the different modalities into separate files still
+
+-- TODO Rename all cas to props everywhere
 -- Eventually Possible : s ⊧ φ ⇔ ∃ p ∃ s ∈ p ⊧ φ
 data EF' {ℓ₁ ℓ₂} {i : Size} {C : Container ℓ₁}
      (cas : FStream' {i} C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
@@ -28,6 +31,7 @@ data EF' {ℓ₁ ℓ₂} {i : Size} {C : Container ℓ₁}
   notYetE :  {j : Size< i} → E (fmap EF' (inF (tail cas))) → EF' cas
 open EF'
 
+--TODO Rewrite as function like EG
 data EF {ℓ₁ ℓ₂} {C : Container ℓ₁}
      (cas : FStream C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
   alreadyE : E (fmap head (inF cas)) → EF cas
