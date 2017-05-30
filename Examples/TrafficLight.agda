@@ -154,12 +154,18 @@ responsivity₁ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
 responsivity₁ = mapEG ⟨ refl ⟩EG₁ ▻EG
 
 responsivity₁' : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
-responsivity₁' = mapEG ⟨ refl ▻EG₁ tt ⟩EG₁ ▻EG
+responsivity₁' = mapEG ⟨ refl ▻EG₁ 5675875 ⟩EG₁ ▻EG
 -- TODO Fubar
 
 responsivity₁₁ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
-responsivity₁₁ = mapEG ⟨ ((true , refl) ▻EG (false , refl) ⟩EG) ▻EG
+responsivity₁₁ = mapEG ⟨ ((true , refl) ▻EG (false , 23) ⟩EG) ▻EG
 -- TODO Fubar
+
+responsivity₁₂ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
+responsivity₁₂ = mapEG₁ FNil (returnReader true ▻ ask ⟩) ⟨ ((true , refl) ▻EG ((true , refl) ⟩EG)) ▻EG
+
+responsivity∼ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
+responsivity∼ = bisimEG map∼ ⟨ ((true , refl) ▻EG []EG) ▻EG
 
 responsivity₂ : ∀ {i} → EG {i} (⟨ vmap (true ≡_) (returnReader true ▻ ask ⟩) ▻⋯)
 proj₁ responsivity₂ = false
@@ -168,6 +174,18 @@ proj₁ (laterE' (proj₂ responsivity₂)) = true
 nowE' (proj₂ (laterE' (proj₂ responsivity₂))) = refl
 laterE' (proj₂ (laterE' (proj₂ responsivity₂))) = responsivity₂
 
+test : ∀ {i} → AG {i} ⟨ ((returnReader ⊤) ▻ ((fmap (_≡_ true) ask) ⟩)) ▻⋯
+test = ⟨ ((λ p → tt) ▻AG ((λ p → {!   !}) ⟩AG)) ▻AG
+
+example : ∀ {i} → FStream {i} (ReaderC ℕ) Set
+example = ⟨ (returnReader ⊤) ▻ (fmap (_≡_ 23) ask) ⟩ ▻⋯
+
+property : ∀ {i} → EG {i} example
+--property = ⟨ ({! 42 , tt  !} _▻EG_ {!   !}) ▻EG
+property = ⟨ (42 , tt) ▻EG (23 , refl) ⟩EG ▻EG
+
+testE : ∀ {i} → EG {i} ⟨ (returnReader ⊤) ▻ (fmap (_≡_ true) ask) ⟩ ▻⋯
+testE = ⟨ (true , tt) ▻EG (true , refl) ⟩EG ▻EG
 
 responsoSmall : EN (⟨ vmap (true ≡_) (returnReader true ▻ ask ⟩) ▻⋯)
 proj₁ responsoSmall = true
