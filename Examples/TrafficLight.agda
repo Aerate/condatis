@@ -53,18 +53,19 @@ boolLight₃ : FStream (ReaderC Bool) Bool
 boolLight₃ = ⟨ returnReader true ▻ returnReader false ▻ returnReader true ⟩ ▻⋯
 
 -- TODO: Check FAₛ implementation since only the 'AlreadyA'-Constructor seems to work
-isLive₃ : ∀ {i} → head (AGₛ' {i} (AFₛ' {i} (initA {i} (map {i} (_≡ green) (trafficLight₃ {i})))))
+isLive₃ : ∀ {i} → head (AGₛ' {i} (AFₛ' (initA (map (_≡ green) (trafficLight₃)))))
 nowA' isLive₃ = alreadyA' (λ p → refl)
 nowA' (laterA' (isLive₃ {i}) {j} p) = {! notYetA' ?   !}
 nowA' (laterA' (laterA' isLive₃ p₁) p₂) = {!   !}
 nowA' (laterA' (laterA' (laterA' isLive₃ p₁) p₂) p) = {!   !}
 laterA' (laterA' (laterA' (laterA' isLive₃ p₁) p₂) p) {j} p₃ = isLive₃
 
-isLive₄ : ∀ {i} → AG {i} (AFₛ {i} (map {i} (_≡ green) (trafficLight₃)))
+isLive₄ : ∀ {i} → AG {i} (AFₛ (map (_≡ green) (trafficLight₃)))
 nowA' (isLive₄ p) = alreadyA' refl
-nowA' (laterA' (isLive₄ {i} p) {j} p₁) = {!  !}
-nowA' (laterA' (laterA' (isLive₄ p) p₁) p₂) = {!   !}
-nowA' (laterA' (laterA' (laterA' (isLive₄ p) p₁) p₂) p₃) = {!   !}
+nowA' (laterA' (isLive₄ p) false) = alreadyA' refl
+nowA' (laterA' (isLive₄ p) true) = notYetA' (const (notYetA' (const (alreadyA' refl))))
+nowA' (laterA' (laterA' (isLive₄ p) p₁) p₂) = notYetA' (λ p₃ → alreadyA' refl)
+nowA' (laterA' (laterA' (laterA' (isLive₄ p) p₁) p₂) p₃) = alreadyA' refl
 laterA' (laterA' (laterA' (laterA' (isLive₄ p) p₁) p₂) p₃) p₄ = isLive₄ true
 
 mutual
@@ -85,11 +86,11 @@ mutual
 -- At every point in time, it is possible (by correct input) to output true
 -- TODO Not sure whether initA is called for here
 mutual
-  edgeResponsive : ∀ {i} → head (AGₛ' {i} (EFₛ' {i} (Eₛ {i} (map {i} (_≡ true) (trueEgde {i})))))
+  edgeResponsive : ∀ {i} → head (AGₛ' {i} (EFₛ' (Eₛ (map (_≡ true) trueEgde ))))
   nowA' edgeResponsive = alreadyE (false , refl)
   laterA' edgeResponsive false = edgeResponsive
   laterA' edgeResponsive true = edgeResponsive'
-  edgeResponsive' : ∀ {i} → head (AGₛ' {i} (EFₛ' {i} (Eₛ {i} (map {i} (_≡ true) (falseEgde {i})))))
+  edgeResponsive' : ∀ {i} → head (AGₛ' {i} (EFₛ' (Eₛ (map (_≡ true) falseEgde))))
   nowA' edgeResponsive' = alreadyE (true , refl)
   laterA' edgeResponsive' false = edgeResponsive'
   laterA' edgeResponsive' true = edgeResponsive
