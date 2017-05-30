@@ -11,8 +11,8 @@ open import FStream.Core
 open import FStream.FVec
 open import FStream.Containers
 
-open import CTL.Modalities
-open import CTL.Proof
+open import CTL.A
+open import CTL.E
 open import CTL.ModalitiesIdeas
 
 data Colour : Set where
@@ -152,10 +152,10 @@ nowE' (proj₂ (laterE' (proj₂ responsivity))) = refl
 laterE' (proj₂ (laterE' (proj₂ responsivity))) = responsivity
 
 responsivity₁ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
-responsivity₁ = mapEG ⟨ refl ⟩EG₁ ▻EG
+responsivity₁ = mapEG ⟨ refl ⟩EGᵢ ▻EG
 
 responsivity₁' : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
-responsivity₁' = mapEG ⟨ refl ▻EG₁ 5675875 ⟩EG₁ ▻EG
+responsivity₁' = mapEG ⟨ refl ▻EGᵢ 5675875 ⟩EGᵢ ▻EG
 -- TODO Fubar
 
 responsivity₁₁ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
@@ -163,7 +163,7 @@ responsivity₁₁ = mapEG ⟨ ((true , refl) ▻EG (false , 23) ⟩EG) ▻EG
 -- TODO Fubar
 
 responsivity₁₂ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
-responsivity₁₂ = mapEG₁ FNil (returnReader true ▻ ask ⟩) ⟨ ((true , refl) ▻EG ((true , refl) ⟩EG)) ▻EG
+responsivity₁₂ = mapEGᵢ FNil (returnReader true ▻ ask ⟩) ⟨ ((true , refl) ▻EG ((true , refl) ⟩EG)) ▻EG
 
 responsivity∼ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
 responsivity∼ = bisimEG map∼ ⟨ ((true , refl) ▻EG []EG) ▻EG
@@ -247,7 +247,7 @@ tautology₆ = ⟨ (23 , tt) ▻EG (42 , tt) ⟩EG ▻EG
 
 -- In lots of cases, Agda can infer the input that will validate the proof
 easy : EG ⟨ (true ≡_) <$> ask ▻ returnReader ⊤ ⟩ ▻⋯
-easy = ⟨ refl ▻EG₁ tt ⟩EG₁ ▻EG
+easy = ⟨ refl ▻EGᵢ tt ⟩EGᵢ ▻EG
 
 
 timesTwo : ∀ {i} → FStream {i} (ReaderC ℕ) ℕ

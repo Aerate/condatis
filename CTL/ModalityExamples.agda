@@ -11,7 +11,8 @@ open import Data.Unit
 
 open import FStream.Containers
 open import FStream.Core
-open import CTL.Modalities 
+open import CTL.A 
+open import CTL.E
 
 readDouble : ⟦ ReaderC ℕ ⟧ ℕ
 readDouble = fmap (_* 2) ask
