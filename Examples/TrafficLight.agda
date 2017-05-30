@@ -129,14 +129,16 @@ laterA' (laterA' isAlwaysGreen _) _ = isAlwaysGreen
 -}
 
 isAlwaysGreen' : ∀ {i} → AG {i} (map (_≡ green) alwaysGreen)
-isAlwaysGreen' = {! cycleGA ?  !}
-
+isAlwaysGreen' = mapAG ⟨ (λ p → tt) ▻AG (λ p → refl) ⟩AG ▻AG
+-- TODO Impossible
 
 isGreenOrRed : ∀ {i} → AG {i} (map (λ x → (x ≡ green) ⊎ (x ≡ red)) ⟨ returnReader green ▻ returnReader red ⟩ ▻⋯)
 nowA' (isGreenOrRed p) = inj₁ refl
 nowA' (laterA' (isGreenOrRed p) p₁) = inj₂ refl
 laterA' (laterA' (isGreenOrRed p) p₁) p₂ = isGreenOrRed p
 
+isGreenOrRed₁ : ∀ {i} → AG {i} (map (λ x → (x ≡ green) ⊎ (x ≡ red)) ⟨ returnReader green ▻ returnReader red ⟩ ▻⋯)
+isGreenOrRed₁ = mapAG ⟨ ((λ p → refl) ▻AG ((λ p → inj₁) ⟩AG)) ▻AG
 
 trafficLight₄ : ∀ {i} → FStream {i} (ReaderC Bool) Bool
 trafficLight₄ = ⟨ returnReader true ▻ ask ⟩ ▻⋯
@@ -152,7 +154,12 @@ responsivity₁ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
 responsivity₁ = mapEG ⟨ refl ⟩EG₁ ▻EG
 
 responsivity₁' : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
-responsivity₁' = mapEG ⟨ refl ▻EG₁ refl ⟩EG₁ ▻EG
+responsivity₁' = mapEG ⟨ refl ▻EG₁ tt ⟩EG₁ ▻EG
+-- TODO Fubar
+
+responsivity₁₁ : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
+responsivity₁₁ = mapEG ⟨ ((true , refl) ▻EG (false , refl) ⟩EG) ▻EG
+-- TODO Fubar
 
 responsivity₂ : ∀ {i} → EG {i} (⟨ vmap (true ≡_) (returnReader true ▻ ask ⟩) ▻⋯)
 proj₁ responsivity₂ = false
@@ -237,3 +244,19 @@ laterA' (alwaysEven p) = alwaysEven
 alwaysEven₁ : ∀ {i} → AG {i} (map even timesTwo)
 -- alwaysEven₁ = mapAG ([]AG pre⟨ {!   !} ▻AG) -- TODO Report internal error on refining
 alwaysEven₁ = mapAG ⟨ (λ p → p) ⟩AG ▻AG
+
+someMoreEven : ∀ {i} → AG {i} (map even ⟨ fmap (_* 2) ask ▻ returnReader 2 ⟩ ▻⋯)
+nowA' (someMoreEven p) = p , refl
+nowA' (laterA' (someMoreEven p) p₁) = 1 , refl
+laterA' (laterA' (someMoreEven p) p₁) = someMoreEven
+
+someMoreEven₁ : ∀ {i} → AG {i} (map even ⟨ fmap (_* 2) ask ▻ returnReader 2 ⟩ ▻⋯)
+-- someMoreEven₁ = mapAG ⟨ ((λ p → refl) ▻AG []AG) ▻AG -- TODO Even this works
+someMoreEven₁ = mapAG ⟨ ((λ p → refl) ▻AG ((λ p → refl) ⟩AG)) ▻AG
+
+
+
+
+
+
+--
