@@ -1,50 +1,50 @@
-module FStream.Bisimulation where
+module FStream.Bisimulation-alt where
 
 open import Library
+open import Relation.Binary
 open import Relation.Binary.PropositionalEquality
--- open import Relation.Binary.HeterogeneousEquality
+open import Relation.Binary.PropositionalEquality.Core as Core
+-- open ≡-Reasoning
 
 open import FStream.Core
-open import FStream.Modalities
 
 
-record _∼A_ {ℓ₁ ℓ₂} {X : Set ℓ₁} {C : Container ℓ₂} (s₁ s₂ : FStream' C X) : Set (ℓ₁ ⊔ ℓ₂) where
-  coinductive
-  field
-    hd∼A : head s₁ ≡ head s₂
-    sameShapes : proj₁ (inF (tail s₁)) ≡ proj₁ (inF (tail s₂))
-    tl∼A : ∀ pos → (proj₂ (inF (tail s₁)) pos ∼A proj₂ (inF (tail s₂)) (subst (Position C) sameShapes pos))
+mutual
+  record _~_ {i} {ℓ₁ ℓ₂} {X : Set ℓ₁} {C : Container ℓ₂} (s₁ s₂ : FStream {i} C X) : Set (ℓ₁ ⊔ ℓ₂) where
+    coinductive
+    field
+      sameInitShapes : proj₁ (inF s₁) ≡ proj₁ (inF s₂)
+      bisim : ∀ pos → proj₂ (inF s₁) pos ~' proj₂ (inF s₂) (subst (Position C) sameInitShapes pos)
+  record _~'_ {i} {ℓ₁ ℓ₂} {X : Set ℓ₁} {C : Container ℓ₂} (s₁ s₂ : FStream' {i} C X) : Set (ℓ₁ ⊔ ℓ₂) where
+    coinductive
+    field
+      hd∼ : head s₁ ≡ head s₂
+      tl∼ : ∀ {j : Size< i} → tail s₁ ~ tail s₂
+open _~_ public
+open _~'_ public
 
-record _⇒A_ {ℓ₁ ℓ₂} {C : Container ℓ₂} (s₁ s₂ : FStream' C (Set ℓ₁)) : Set (ℓ⁺ (ℓ₁ ⊔ ℓ₂)) where
-  coinductive
-  field
-    hd∼A : head s₁ → head s₂
-    sameShapes : proj₁ (inF (tail s₁)) ≡ proj₁ (inF (tail s₂))
-    tl∼A : ∀ pos → (proj₂ (inF (tail s₁)) pos ⇒A proj₂ (inF (tail s₂)) (subst (Position C) sameShapes pos))
-
--- TODO Generalise for arbitrary propositions
-
-
-record _∼E_ {ℓ₁ ℓ₂} {X : Set ℓ₁} {C : Container ℓ₂} (s₁ s₂ : FStream' C X) : Set (ℓ₁ ⊔ ℓ₂) where
-  coinductive
-  field
-    hd∼E : head s₁ ≡ head s₂
-    sameShapesE : proj₁ (inF (tail s₁)) ≡ proj₁ (inF (tail s₂))
-    tl∼E : ∃ λ pos → _∼E_ (proj₂ (inF (tail s₁)) pos) (proj₂ (inF (tail s₂)) (subst (Position C) sameShapesE pos))
-open _∼E_ public
+-- alias
+_∼_ = _~_
 
 {-
-_∼ₛ_ : ∀ {ℓ₁ ℓ₂} {X : Set ℓ₁} {C : Container ℓ₂} → (s₁ s₂ : FStream' C X) → FStream' C (Set (ℓ₁ ⊔ ℓ₂))
-head (s₁ ∼ₛ s₂) = (head s₁ ≡ head s₂) × (proj₁ (inF (tail s₁))) ≡ (proj₁ (inF (tail s₂)))
---inF (tail (_∼ₛ_ {C = C} s₁ s₂)) = (proj₁ (inF (tail s₁))) , (λ pos → proj₂ (inF (tail s₁)) pos ∼ₛ proj₂ (inF (tail s₂)) (subst (Position C) (proj₂ (head {! s₁ ∼ₛ s₂  !})) pos) )
-proj₁ (inF (tail (_∼ₛ_ {C = C} s₁ s₂))) = proj₁ (inF (tail s₁))
-proj₂ (inF (tail (_∼ₛ_ {C = C} s₁ s₂))) pos = {!   !}
--- TODO Typ mit Wert vertauscht
+mutual
+  BisimEquiv  : ∀ {i : Size} → IsEquivalence (_~_ {i})
+  sameInitShapes (IsEquivalence.refl BisimEquiv {x = x}) = refl
+  bisim (IsEquivalence.refl (BisimEquiv {i}) {x}) {j} pos = IsEquivalence.refl (BisimEquiv' {i})
+  sameInitShapes (IsEquivalence.sym BisimEquiv x) = sym (sameInitShapes x)
+  bisim (IsEquivalence.sym (BisimEquiv {i}) {i = s1} {j = s2} x) pos with bisim x pos
+  ... | bla = IsEquivalence.sym BisimEquiv' (subst (λ x₁ → {!   !}) lemma x)
+    where
+      lemma = begin {!   !}
+  sameInitShapes (IsEquivalence.trans BisimEquiv bisim1 bisim2) = trans (sameInitShapes bisim1) (sameInitShapes bisim2)
+  bisim (IsEquivalence.trans BisimEquiv bisim1 bisim2) pos = IsEquivalence.trans BisimEquiv' {!   !} {!   !}
+
+
+  BisimEquiv' : ∀ {i : Size} → IsEquivalence (_~'_ {i})
+  hd∼ (IsEquivalence.refl BisimEquiv' {x}) = refl
+  tl∼ (IsEquivalence.refl BisimEquiv' {x}) {j} = IsEquivalence.refl (BisimEquiv {j})
+  hd∼ (IsEquivalence.sym BisimEquiv' x) = sym (hd∼ x)
+  tl∼ (IsEquivalence.sym BisimEquiv' x) {j} = IsEquivalence.sym BisimEquiv (tl∼ x)
+  hd∼ (IsEquivalence.trans BisimEquiv' bisim1 bisim2) = trans (hd∼ bisim1) (hd∼ bisim2)
+  tl∼ (IsEquivalence.trans BisimEquiv' bisim1 bisim2) {j} = IsEquivalence.trans BisimEquiv (tl∼ bisim1) (tl∼ bisim2)
 -}
-
-
-
-
-
-
---
