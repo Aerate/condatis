@@ -4,7 +4,8 @@ module FStream.Containers where
 -- Containers & their extension
 ------------------------------------------------------------------------
 
-open import Data.Fin 
+open import Data.Fin
+open import Data.Maybe
 open import Data.Unit
 
 open import Library
@@ -34,3 +35,13 @@ proj₂ ask x = x
 
 returnReader : ∀ {ℓ} {A : Set ℓ} {R : Set} → A → ⟦ ReaderC R ⟧ A
 returnReader a = tt , (λ _ → a)
+
+ExceptC : Set → Container ℓ₀
+Shape (ExceptC E) = Maybe E
+Position (ExceptC E₁) (just x) = ⊥
+Position (ExceptC E₁) nothing = ⊤
+
+-- TODO Use stdlib
+IdC : Container ℓ₀
+Shape IdC = ⊤
+Position IdC tt = ⊤
