@@ -33,6 +33,9 @@ EFₛ' : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream' {i} C (Set �
 head (EFₛ' x) =  EF' x
 inF (tail (EFₛ' x)) = fmap EFₛ' (inF (tail x))
 
+EFₛ : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → FStream {i} C (Set (ℓ₁ ⊔ ℓ₂))
+inF (EFₛ props) = fmap EFₛ' (inF props)
+
 -- GAₛ' : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁} → FStream {i} C (Set ℓ₂) → FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂))
 -- head (GAₛ' cas) = GA cas
 -- inF (tail (GAₛ' cas)) = fmap (GAₛ' ∘ (λ as → tail as)) (inF cas)
