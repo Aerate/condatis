@@ -83,6 +83,8 @@ mutual
   head (proj₂ (inF falseEgde) false) = false
   tail (proj₂ (inF falseEgde) false) = falseEgde
 
+
+
 -- At every point in time, it is possible (by correct input) to output true
 -- TODO Not sure whether initA is called for here
 mutual
@@ -94,6 +96,21 @@ mutual
   nowA' edgeResponsive' = alreadyE (true , refl)
   laterA' edgeResponsive' false = edgeResponsive'
   laterA' edgeResponsive' true = edgeResponsive
+
+frob : ∀ {i} → Bool → FStream {i} (ReaderC Bool) Bool
+proj₁ (inF (frob b)) = tt
+head (proj₂ (inF (frob b)) false) = b
+tail (proj₂ (inF (frob b)) false) = frob b
+head (proj₂ (inF (frob b)) true) = not b
+tail (proj₂ (inF (frob b)) true) = frob (not b)
+
+frobResponsive : ∀ {i} → (b : Bool) → AG {i} (EFₛ (map (_≡ true) (frob b) ))
+nowA' (frobResponsive false false) = notYetE (true , alreadyE refl)
+nowA' (frobResponsive false true) = alreadyE refl
+nowA' (frobResponsive true false) = alreadyE refl
+nowA' (frobResponsive true true) = notYetE (true , (alreadyE refl))
+laterA' (frobResponsive b false) = frobResponsive b
+laterA' (frobResponsive b true) = frobResponsive (not b)
 
 -- Prove that a series of ⊤ is always true, under any circumstance
 tautology : AG' ⟨ ⊤ ▻' returnReader FNil' ▻⋯'
@@ -141,6 +158,11 @@ laterA' (laterA' (isGreenOrRed p) p₁) p₂ = isGreenOrRed p
 
 trafficLight₄ : ∀ {i} → FStream {i} (ReaderC Bool) Bool
 trafficLight₄ = ⟨ returnReader true ▻ ask ⟩ ▻⋯
+
+liveness₄ : ∀ {i} → AG {i} (AFₛ (map (true ≡_) trafficLight₄))
+nowA' (liveness₄ p) = alreadyA' refl
+nowA' (laterA' (liveness₄ p) p₁) = notYetA' (λ p₂ → alreadyA' refl)
+laterA' (laterA' (liveness₄ p) p₁) = liveness₄
 
 responsivity : ∀ {i} → EG {i} (map (true ≡_) trafficLight₄)
 proj₁ responsivity = false
