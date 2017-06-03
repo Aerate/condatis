@@ -1,4 +1,4 @@
-module FStream.Bisimulation-alt where
+module FStream.Bisimulation where
 
 open import Library
 open import Relation.Binary
