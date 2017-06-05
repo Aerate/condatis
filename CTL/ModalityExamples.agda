@@ -5,14 +5,11 @@
 module CTL.ModalityExamples where
 
 open import Library
-open import Data.Nat
-open import Relation.Binary.PropositionalEquality
-open import Data.Unit
 
 open import FStream.Containers
 open import FStream.Core
-open import CTL.A 
-open import CTL.E
+
+open import CTL.Modalities
 
 readDouble : ⟦ ReaderC ℕ ⟧ ℕ
 readDouble = fmap (_* 2) ask
@@ -32,11 +29,11 @@ sometimes3 = suc (suc zero) , refl
 sometimes5 : ◇ (_≡ 5) readSuc
 sometimes5 = suc (suc (suc (suc zero))) , refl
 
--- It is always the case that constantly readSuc outputs ℕ > 0, 
+-- It is always the case that constantly readSuc outputs ℕ > 0,
 -- regardless of the environment
 always>0 : AG (map (_> 0) (constantly readSuc))
-nowA' (always>0 p) = alwaysPos p
-laterA' (always>0 p) = {!!}
+nowA (always>0 p) = alwaysPos p
+laterA (always>0 p) = {!!}
 
 {-nowA always>0 = λ p → s≤s z≤n
 laterA always>0 = λ p → always>0
@@ -59,7 +56,7 @@ sum = sumFrom 0
 -- Eventually the sum is greater than 2
 eventuallysometimes>2 : EF (map (_> 2) sum)
 -- ... having 3 as input, this is of course the case after 1 step
-eventuallysometimes>2 = alreadyE (suc (suc (suc zero)) , s≤s (s≤s (s≤s z≤n)))
+eventuallysometimes>2 = ? --alreadyE (suc (suc (suc zero)) , s≤s (s≤s (s≤s z≤n)))
 
 -- Always somehow the sum is greater than 2
 alwaysSomehow>2 : ∀ {i} → EG {i} (map (_> 2) sum)

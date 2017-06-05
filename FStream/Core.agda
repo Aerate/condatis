@@ -20,6 +20,9 @@ mutual
 open FStream public
 open FStream' public
 
+
+-- TODO Remove nonworking things and put all auxiliary functions in Util.agda
+
 postulate
   _►_ : ∀ {ℓ₁ ℓ₂} {C : Container ℓ₁} {A : Set ℓ₂} →
     ⟦ C ⟧ A → FStream C A → FStream C A
