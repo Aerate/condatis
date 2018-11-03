@@ -1,3 +1,7 @@
+module FStream.Clocked where
+
+open import Library
+open import FStream.Core
 
 mutual
   record ClSF {i : Size} {ℓ₁ ℓ₂} {Cl : Set ℓ₂}  (C : Container ℓ₁) (cl : FStream C Cl) (A B : Set ℓ₂) : Set (ℓ₁ ⊔ ℓ₂) where
@@ -13,5 +17,8 @@ open FStream public
 open FStream' public
 
 _>>>_ : ∀ {i : Size} {ℓ₁ ℓ₂} {a b c Cl : Set ℓ₂} {C : Container ℓ₁} {cl : FStream C Cl} → ClSF {i} C cl a b → ClSF {i} C cl b c → ClSF {i} C cl a c
+_>>>_ = {!!}
 
-runClock : ∀ {i : Size} {ℓ₁ ℓ₂} {Cl B : Set ℓ₂} {C : Container ℓ₁} → (cl : FStream C Cl) → ClSF {i} C cl A B → FStream {i} C A -> FStream {i} C B 
+-- runClock : ∀ {i : Size} {ℓ₁ ℓ₂} {Cl B : Set ℓ₂} {C : Container ℓ₁} → (cl : FStream C Cl) → ClSF {i} C cl A B → FStream {i} C A -> FStream {i} C B 
+runClock : ∀ {i : Size} {ℓ₁ ℓ₂} {A B Cl : Set ℓ₂} {C : Container ℓ₁} → (cl : FStream C Cl) → ClSF {i} C cl A B → FStream {i} C A -> FStream {i} C B 
+runClock = {!!}
