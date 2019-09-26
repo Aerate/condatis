@@ -4,25 +4,24 @@ open import FStream.Core
 open import Library
 
 -- Possibly forever : s₀ ⊧ φ ⇔ ∃ s₀ R s₁ R ... ∀ i . sᵢ ⊧ φ
-{-# NO_POSITIVITY_CHECK #-} -- Not necessary from EGda 2.6 upwards
-record EG' {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁}
-  (props : FStream' C (Set ℓ₂)) : Set (ℓ₁ ⊔ ℓ₂) where
+record EG' {i : Size} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁ ℓ₂}
+  (props : FStream' C (Set ℓ₃)) : Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃) where
   coinductive
   field
     nowE   : head props
     laterE : {j : Size< i} → E (fmap EG' (inF (tail props)))
 open EG' public
 
-EG : ∀ {i : Size} {ℓ₁ ℓ₂} {C : Container ℓ₁}
-   → FStream C (Set ℓ₂) → Set (ℓ₁ ⊔ ℓ₂)
-EG props = EPred EG' (inF props)
+EG : ∀ {i : Size} {ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁ ℓ₂}
+   → FStream C (Set ℓ₃) → Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃)
+EG {_} {_} {_} {_} {C} props = ◇ C EG' (inF props)
 
 mutual
-  EGₛ' : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁}
-       → FStream' C (Set ℓ₂) → FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂))
+  EGₛ' : ∀ {i ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁ ℓ₂}
+       → FStream' C (Set ℓ₃) → FStream' {i} C (Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃))
   head (EGₛ' props) = EG' props
   tail (EGₛ' props) = EGₛ (tail props)
 
-  EGₛ : ∀ {i ℓ₁ ℓ₂} {C : Container ℓ₁}
-      → FStream C (Set ℓ₂) → FStream {i} C (Set (ℓ₁ ⊔ ℓ₂))
+  EGₛ : ∀ {i ℓ₁ ℓ₂ ℓ₃} {C : Container ℓ₁ ℓ₂}
+      → FStream C (Set ℓ₃) → FStream {i} C (Set (ℓ₁ ⊔ ℓ₂ ⊔ ℓ₃))
   inF (EGₛ props) = fmap EGₛ' (inF props)

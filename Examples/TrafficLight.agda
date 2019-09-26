@@ -195,21 +195,21 @@ EN'
   FCons
   (tt ,
    (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil)))))
-EPred head (inF (tail
+◇ C head (inF (tail
  (((true ≡ true) , FCons (tt , (λ x → (true ≡ x) , FNil))) aux
   FCons
   (tt ,
    (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil)))))))
-EPred head (inF
+◇ C head (inF
  (( FCons (tt , (λ x → (true ≡ x) , FNil))) pre⟨
   FCons
   (tt ,
    (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))) ▻⋯ )))
-EPred head (fmap (_aux
+◇ C head (fmap (_aux
   (FCons
   (tt ,
    (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))) ▻⋯ ))) (tt , (λ x → (true ≡ x) , FNil)) )
-EPred head (tt , (λ x → (true ≡ x) , FNil) aux
+◇ C head (tt , (λ x → (true ≡ x) , FNil) aux
   FCons
   (tt ,
    (λ x → (true ≡ true) , FCons (tt , (λ x₁ → (true ≡ x₁) , FNil))) ▻⋯ ) )
